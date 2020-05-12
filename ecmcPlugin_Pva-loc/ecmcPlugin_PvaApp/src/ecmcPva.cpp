@@ -44,24 +44,24 @@ template <typename T>
    };*/
 
 template <typename T>
-class pvget : public exprtk::igeneric_function<T>
+struct pvget : public exprtk::igeneric_function<T>
 {
 public:
 
    typedef typename exprtk::igeneric_function<T> igfun_t;
    typedef typename igfun_t::parameter_list_t    parameter_list_t;
    typedef typename igfun_t::generic_type        generic_type;
-   typedef typename generic_type::vector_view    vector_t;
+   typedef typename generic_type::string_view    string_t;
 
    using exprtk::igeneric_function<T>::operator();
 
    pvget()
    : exprtk::igeneric_function<T>("S")
-   { printf("pvget constructs\n"); }
+   { printf("pvget constructs 1\n"); }
 
-   inline T operator()(const std::size_t& ps_index, parameter_list_t parameters)
+   inline T operator()(parameter_list_t parameters)
    {
-      vector_t v(parameters[0]);
+      string_t string(parameters[0]);
 
 //       std::size_t r0 = 0;
 //       std::size_t r1 = v.size() - 1;
@@ -76,8 +76,7 @@ public:
 
       // for (std::size_t i = r0; i <= r1; ++i) { v[i] = rnd(); }
 
-      //return T(1);
-      return 1;
+      return T(0);      
    }
 
 private:
@@ -91,14 +90,14 @@ private:
 };
 
 template <typename T>
-class pvput : public exprtk::igeneric_function<T>
+struct pvput : public exprtk::igeneric_function<T>
 {
 public:
 
    typedef typename exprtk::igeneric_function<T> igfun_t;
    typedef typename igfun_t::parameter_list_t    parameter_list_t;
    typedef typename igfun_t::generic_type        generic_type;
-   typedef typename generic_type::vector_view    vector_t;
+   typedef typename generic_type::string_view    string_t;
 
    using exprtk::igeneric_function<T>::operator();
 
@@ -109,11 +108,11 @@ public:
          0. V   - vector
          1. VTT - vector, r0, r1
       */
-   { printf("pvput constructs\n"); }
+   { printf("pvput constructs 1\n"); }
 
-   inline T operator()(const std::size_t& ps_index, parameter_list_t parameters)
+   inline T operator()(parameter_list_t parameters)
    {
-      vector_t v(parameters[0]);
+      string_t string(parameters[0]);
 
       // std::size_t r0 = 0;
       // std::size_t r1 = v.size() - 1;
@@ -129,8 +128,7 @@ public:
 
       // for (std::size_t i = r0; i <= r1; ++i) { v[i] = rnd(); }
 
-      // return T(1);
-      return 2;
+      return T(1);
    }
 
 private:
