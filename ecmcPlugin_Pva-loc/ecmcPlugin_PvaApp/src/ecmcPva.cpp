@@ -13,6 +13,36 @@
 
 #include "exprtk.hpp"
 
+
+/*
+template <typename T>
+   struct toupper : public exprtk::igeneric_function<T>
+   {
+      typedef exprtk::igeneric_function<T> igenfunct_t
+      typedef typename igenfunct_t::generic_type generic_t;
+      typedef typename igenfunct_t::parameter_list_t parameter_list_t;
+      typedef typename generic_t::string_view string_t;
+
+      toupper()
+      : exprtk::igeneric_function<T>("S",igenfunct_t::e_rtrn_string)
+      {}
+
+      inline T operator()(std::string& result,
+                          parameter_list_t parameters)
+      {
+         result.clear();
+
+         string_t string(params[0]);
+
+         for (std::size_t i = 0; i < string.size(); ++i)
+         {
+            result += std::toupper(string[i]);
+         }
+
+         return T(0);
+      }
+   };*/
+
 template <typename T>
 class pvget : public exprtk::igeneric_function<T>
 {
