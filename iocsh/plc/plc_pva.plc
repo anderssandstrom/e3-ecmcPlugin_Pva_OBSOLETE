@@ -1,0 +1,2 @@
+var test1:=pv_get('test');
+var test2:=pv_put('test2');
