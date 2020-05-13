@@ -44,8 +44,7 @@ int pvaConstruct(char *configStr)
 
   // Add refs to generic funcs in runtime since objects
   printf("CONSTRUCTS!!!!!!!!");
-  pluginDataDef.funcs[0].funcGenericObj = getPvGetObj();
-  pluginDataDef.funcs[1].funcGenericObj = getPvPutObj();
+  pluginDataDef.funcs[0].funcGenericObj = getPvRegObj();  
   return 0;
 }
 
@@ -86,6 +85,24 @@ int pvaExitRT(void){
   return 0;
 }
 
+// Normal PLC functions
+double pvaGet(double handle) {
+  return getData(handle);
+}
+
+double pvaPut(double handle, double value) {
+  return putData(handle, value);
+}
+
+double pvaGetErr(double handle) {
+  return getError(handle);
+}
+
+double pvaRstErr(double handle) {
+  reset(handle);
+  return 0.0;
+}
+
 // Register data for plugin so ecmc know what to use
 struct ecmcPluginData pluginDataDef = {
   // Allways use ECMC_PLUG_VERSION_MAGIC
@@ -110,15 +127,9 @@ struct ecmcPluginData pluginDataDef = {
   .realtimeExitFnc = pvaExitRT,
   // PLC funcs
   .funcs[0] =
-      { /*----pv_get----*/
-        // Function name (this is the name you use in ecmc plc-code)
-        .funcName = "pv_get",
-        // Function description
-        .funcDesc = "double pv_get(<pv name>) : Get pv value.",
-        /**
-        * 7 different prototypes allowed (only doubles since reg in plc).
-        * Only funcArg${argCount} func shall be assigned the rest set to NULL.
-        **/
+      { /*----pv_reg----*/
+        .funcName = "pv_reg",
+        .funcDesc = "handle = pv_reg(<pv name>, <provider name pva/ca>) : register new pv.",
         .funcArg0 = NULL,
         .funcArg1 = NULL,
         .funcArg2 = NULL,
@@ -130,20 +141,31 @@ struct ecmcPluginData pluginDataDef = {
         .funcArg8 = NULL,
         .funcArg9 = NULL,
         .funcArg10 = NULL,        
-        .funcGenericObj = NULL,
+        .funcGenericObj = NULL,  // will assigned here during construct
       },
   .funcs[1] =
       { /*----pv_put----*/
-        // Function name (this is the name you use in ecmc plc-code)
         .funcName = "pv_put",
-        // Function description
-        .funcDesc = "double pv_put(<pv name>, <value>) : Set pv value.",
-        /**
-        * 7 different prototypes allowed (only doubles since reg in plc).
-        * Only funcArg${argCount} func shall be assigned the rest set to NULL.
-        **/
+        .funcDesc = "error = pv_put(<handle>, <value>) : Set pv value.",
         .funcArg0 = NULL,
         .funcArg1 = NULL,
+        .funcArg2 = pvaPut,
+        .funcArg3 = NULL,
+        .funcArg4 = NULL,
+        .funcArg5 = NULL,
+        .funcArg6 = NULL,
+        .funcArg7 = NULL,
+        .funcArg8 = NULL,
+        .funcArg9 = NULL,
+        .funcArg10 = NULL,
+        .funcGenericObj = NULL,
+      },
+  .funcs[2] =
+      { /*----pv_get----*/
+        .funcName = "pv_get",
+        .funcDesc = "value = pv_get(<handle>) : Get pv value.",
+        .funcArg0 = NULL,
+        .funcArg1 = pvaGet,
         .funcArg2 = NULL,
         .funcArg3 = NULL,
         .funcArg4 = NULL,
@@ -155,7 +177,41 @@ struct ecmcPluginData pluginDataDef = {
         .funcArg10 = NULL,
         .funcGenericObj = NULL,
       },
-  .funcs[2]  = {0}, // last element set all to zero..
+  .funcs[3] =
+      { /*----pv_get_err----*/
+        .funcName = "pv_get_err",
+        .funcDesc = "error = pv_get_err(<handle>) : Get error code.",
+        .funcArg0 = NULL,
+        .funcArg1 = pvaGetErr,
+        .funcArg2 = NULL,
+        .funcArg3 = NULL,
+        .funcArg4 = NULL,
+        .funcArg5 = NULL,
+        .funcArg6 = NULL,
+        .funcArg7 = NULL,
+        .funcArg8 = NULL,
+        .funcArg9 = NULL,
+        .funcArg10 = NULL,
+        .funcGenericObj = NULL,
+      },
+  .funcs[4] =
+      { /*----pv_rst_err----*/
+        .funcName = "pv_rst_err",
+        .funcDesc = "pv_rst_err(<handle>) : Reset error code.",
+        .funcArg0 = NULL,
+        .funcArg1 = pvaRstErr,
+        .funcArg2 = NULL,
+        .funcArg3 = NULL,
+        .funcArg4 = NULL,
+        .funcArg5 = NULL,
+        .funcArg6 = NULL,
+        .funcArg7 = NULL,
+        .funcArg8 = NULL,
+        .funcArg9 = NULL,
+        .funcArg10 = NULL,
+        .funcGenericObj = NULL,
+      },
+  .funcs[5]  = {0}, // last element set all to zero..
   .consts[0] = {0}, // last element set all to zero..
 };
 

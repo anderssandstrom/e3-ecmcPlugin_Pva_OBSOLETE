@@ -16,15 +16,63 @@
 
 
 #include "ecmcPvaWrap.h"
-#include "ecmcPva.cpp"
+#include "ecmcPvRegFunc.h"
 
-// pvget<double> pvgetobject_cpp;
-// pvput<double> pvputobject_cpp;
+//  void* getPvGetObj() {
+//    return (void*) new pvget<double>();
+//  }
 
- void* getPvGetObj() {
-   return (void*) new pvget<double>();
- }
+//  void* getPvPutObj() {
+//    return (void*) new pvput<double>();
+//  }
 
- void* getPvPutObj() {
-   return (void*) new pvput<double>();
- }
+void* getPvRegObj() {
+  return (void*) new pvreg<double>();
+}
+
+void reset(double handle) {
+  try{
+    pvVector.at(handle)->reset();
+  }    
+  catch(std::exception &e){
+    std::cerr << "Error: " << e.what() << "\n";
+    return;
+  }
+  return;
+}
+
+double getError(double handle) {
+  try{
+    return pvVector.at(handle)->getError();
+  }    
+  catch(std::exception &e){
+    std::cerr << "Error: " << e.what() << "\n";
+    return 0.0;
+  }
+  return 0.0;
+}
+
+// Normal plc functions
+double getData(double handle) {
+  try{
+    return pvVector.at(handle)->get();
+  }    
+  catch(std::exception &e){
+    std::cerr << "Error: " << e.what() << "\n";
+    return 0.0;
+  }
+  return 0.0;
+}
+
+// Normal plc functions
+double putData(double handle, double value) {
+  try{
+    pvVector.at((int)handle)->put(value);
+    return 0.0;
+  }    
+  catch(std::exception &e){
+    std::cerr << "Error: " << e.what() << "\n";
+    return ECMC_PV_PUT_ERROR;
+  }
+  return ECMC_PV_PUT_ERROR;
+}

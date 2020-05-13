@@ -47,13 +47,21 @@ APPSRC:=$(APP)/src
 
 USR_CFLAGS   += -shared -fPIC -Wall -Wextra
 USR_LDFLAGS  += -lstdc++
+USR_LDFLAGS  += -L/epics/base-7.0.3.1/lib/linux-arm/
+USR_LDFLAGS  += -lpvaClient 
+USR_LDFLAGS  += -lpvAccess 
+USR_LDFLAGS  += -lpvAccessCA
+USR_LDFLAGS  += -lnt
+USR_LDFLAGS  += -lca
+USR_LDFLAGS  += -lCom
+
 USR_INCLUDES += -I$(where_am_I)$(APPSRC)
 
 TEMPLATES += $(wildcard $(APPDB)/*.db)
 TEMPLATES += $(wildcard $(APPDB)/*.template)
 SOURCES += $(APPSRC)/ecmcPluginPva.c
 SOURCES += $(APPSRC)/ecmcPvaWrap.cpp
-SOURCES += $(APPSRC)/ecmcPva.cpp
+SOURCES += $(APPSRC)/ecmcPv.cpp
 
 db:
 

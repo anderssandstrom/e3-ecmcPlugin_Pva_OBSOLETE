@@ -12,12 +12,19 @@
 #ifndef ECMC_FFT_WRAP_H_
 #define ECMC_FFT_WRAP_H_
 
+#include "ecmcPvDefs.h"
+
 # ifdef __cplusplus
 extern "C" {
 # endif  // ifdef __cplusplus
 
- void* getPvGetObj();
- void* getPvPutObj();
+  // void* getPvGetObj();
+  // void* getPvPutObj();
+  void*  getPvRegObj();
+  double getData( double handle);
+  double putData( double handle, double data);
+  void   reset(   double handle);
+  double getError(double handle);
 
 # ifdef __cplusplus
 }

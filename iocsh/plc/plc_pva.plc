@@ -1,6 +1,9 @@
+if(plc0.firstscan) {
+  pv_reg('IOC_TEST:PLC-0-scantime','pva');
+}
 static.test:=static.test+1;
 var retPvGet:=pv_get('IOC_TEST:PLC-0-scantime');
-var retPvPut:=pv_put('test2',static.test);
+#var retPvPut:=pv_put('test2',static.test);
 
 println('retPvGet:', retPvGet);
-println('retPvPut:', retPvPut);
+#println('retPvPut:', retPvPut);
