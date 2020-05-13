@@ -1,2 +1,6 @@
-var test1:=pv_get('test');
-var test2:=pv_put('test2',10);
+static.test:=static.test+1;
+var retPvGet:=pv_get('IOC_TEST:PLC-0-scantime');
+var retPvPut:=pv_put('test2',static.test);
+
+println('retPvGet:', retPvGet);
+println('retPvPut:', retPvPut);

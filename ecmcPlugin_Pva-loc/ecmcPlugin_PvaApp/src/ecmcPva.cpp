@@ -12,72 +12,40 @@
 \*************************************************************************/
 
 #include "exprtk.hpp"
-
-
-/*
-template <typename T>
-   struct toupper : public exprtk::igeneric_function<T>
-   {
-      typedef exprtk::igeneric_function<T> igenfunct_t
-      typedef typename igenfunct_t::generic_type generic_t;
-      typedef typename igenfunct_t::parameter_list_t parameter_list_t;
-      typedef typename generic_t::string_view string_t;
-
-      toupper()
-      : exprtk::igeneric_function<T>("S",igenfunct_t::e_rtrn_string)
-      {}
-
-      inline T operator()(std::string& result,
-                          parameter_list_t parameters)
-      {
-         result.clear();
-
-         string_t string(params[0]);
-
-         for (std::size_t i = 0; i < string.size(); ++i)
-         {
-            result += std::toupper(string[i]);
-         }
-
-         return T(0);
-      }
-   };*/
+#include "pva/client.h"
 
 template <typename T>
 struct pvget : public exprtk::igeneric_function<T>
 {
 public:
 
-   typedef typename exprtk::igeneric_function<T> igfun_t;
-   typedef typename igfun_t::parameter_list_t    parameter_list_t;
-   typedef typename igfun_t::generic_type        generic_type;
-   typedef typename generic_type::string_view    string_t;
+  typedef typename exprtk::igeneric_function<T> igfun_t;
+  typedef typename igfun_t::parameter_list_t    parameter_list_t;
+  typedef typename igfun_t::generic_type        generic_type;
+  typedef typename generic_type::string_view    string_t;
 
-   using exprtk::igeneric_function<T>::operator();
+  using exprtk::igeneric_function<T>::operator();
 
-   pvget()
-   : exprtk::igeneric_function<T>("S")
-   { printf("pvget constructs 1\n"); }
+  pvget()
+  : exprtk::igeneric_function<T>("S")
+  { 
+    printf("pvget constructs 1\n"); 
+  }
 
-   inline T operator()(parameter_list_t parameters)
-   {
-      string_t string(parameters[0]);
-
-//       std::size_t r0 = 0;
-//       std::size_t r1 = v.size() - 1;
-
-      printf("pvget call\n");
-      // if (
-      //      (1 == ps_index) &&
-      //      !exprtk::rtl::vecops::helper::
-      //         load_vector_range<T>::process(parameters, r0, r1, 1, 2, 0)
-      //    )
-      //    return T(0);
-
-      // for (std::size_t i = r0; i <= r1; ++i) { v[i] = rnd(); }
-
-      return T(0);      
-   }
+  inline T operator()(parameter_list_t parameters)
+  {
+    string_t pvName(parameters[0]);
+    printf("pvget call: %s\n",&pvName[0]);
+    try{
+      pvac::ClientProvider provider("pva");  // move to constructor
+      pvac::ClientChannel  channel(provider.connect(&pvName[0]));
+      std::cout << channel.name() << " : " << channel.get() << "\n";
+    }
+    catch(std::exception &e){
+      std::cerr << "Error: " << e.what() << "\n";
+    }
+    return T(1000);
+  }
 
 private:
 
@@ -94,42 +62,26 @@ struct pvput : public exprtk::igeneric_function<T>
 {
 public:
 
-   typedef typename exprtk::igeneric_function<T> igfun_t;
-   typedef typename igfun_t::parameter_list_t    parameter_list_t;
-   typedef typename igfun_t::generic_type        generic_type;
-   typedef typename generic_type::string_view    string_t;
+  typedef typename exprtk::igeneric_function<T> igfun_t;
+  typedef typename igfun_t::parameter_list_t    parameter_list_t;
+  typedef typename igfun_t::generic_type        generic_type;
+  typedef typename generic_type::string_view    string_t;
+  typedef typename generic_type::scalar_view    scalar_t;
+  using exprtk::igeneric_function<T>::operator();
 
-   using exprtk::igeneric_function<T>::operator();
+  pvput()
+  : exprtk::igeneric_function<T>("ST")
+  { 
+    printf("pvput constructs 1\n"); 
+  }
 
-   pvput()
-   : exprtk::igeneric_function<T>("ST")
-      /*
-         Overloads:
-         0. V   - vector
-         1. VTT - vector, r0, r1
-      */
-   { printf("pvput constructs 1\n"); }
-
-   inline T operator()(parameter_list_t parameters)
-   {
-      string_t string(parameters[0]);
-
-      // std::size_t r0 = 0;
-      // std::size_t r1 = v.size() - 1;
-
-      printf("pvput call\n");
-
-      // if (
-      //      (1 == ps_index) &&
-      //      !exprtk::rtl::vecops::helper::
-      //         load_vector_range<T>::process(parameters, r0, r1, 1, 2, 0)
-      //    )
-      //    return T(0);
-
-      // for (std::size_t i = r0; i <= r1; ++i) { v[i] = rnd(); }
-
-      return T(1);
-   }
+  inline T operator()(parameter_list_t parameters)
+  {
+    string_t pvName(parameters[0]);
+    scalar_t val(parameters[1]);    
+    printf("pvput call: %s, value: %lf\n",&pvName[0],val());
+    return T(val()*val());
+  }
 
 private:
 
