@@ -11,40 +11,7 @@
 \*************************************************************************/
 #include "ecmcPv.h"
 
-/*
-
-    try {
-        PvaClientPtr pva= PvaClient::get("pva ca");
-        exampleDouble(pva,"PVRdouble","pva");
-        exampleDoubleArray(pva,"PVRdoubleArray","pva");
-        PvaClientChannelPtr pvaChannel = pva->createChannel("DBRdouble00","ca");
-        pvaChannel->issueConnect();
-        Status status = pvaChannel->waitConnect(1.0);
-        if(status.isOK()) {
-            exampleDouble(pva,"DBRdouble00","pva");
-            exampleDouble(pva,"DBRdouble00","ca");
-            exampleDoubleArray(pva,"DBRdoubleArray","pva");
-            exampleDoubleArray(pva,"DBRdoubleArray","ca");
-        } else {
-             cout << "DBRdouble00 not found\n";
-        }
-        cout << "_____examplePvaClientGet done_______\n";
-    } catch (std::exception& e) {
-        cerr << "exception " << e.what() << endl;
-        return 1;
-    }
-*/
-
-/*
-    PvaClientPutPtr put = channel->put();
-    PvaClientPutDataPtr putData = put->getData();
-    PvaClientMonitorPtr monitor = pva->channel(channelName,providerName,2.0)->monitor("value");
-    PvaClientMonitorDataPtr monitorData = monitor->getData();
-    putData->putDouble(3.0); put->put();
-*/
-
 ecmcPv::ecmcPv(std::string pvName,std::string providerName) {
-  
   name_         = pvName;
   providerName_ = providerName;
   errorCode_    = 0;
@@ -98,6 +65,10 @@ int ecmcPv::reset() {
 }
 
 double ecmcPv::get() {
+  if (getEcmcEpicsIOCState()!=ECMC_IOC_STARTED_STATE) {
+    errorCode_ = ECMC_PV_IOC_NOT_STARTED;
+    throw std::runtime_error("Error: ECMC IOC not started.");
+  }
 
   if(errorCode_ == ECMC_PV_GET_ERROR) {
     reset(); // reset if try again
@@ -115,6 +86,11 @@ double ecmcPv::get() {
 }
 
 void ecmcPv::put(double value) {
+
+  if (getEcmcEpicsIOCState()!=ECMC_IOC_STARTED_STATE) {
+    errorCode_ = ECMC_PV_IOC_NOT_STARTED;
+    throw std::runtime_error("Error: ECMC IOC not started.");
+  }
 
   if(errorCode_ == ECMC_PV_PUT_ERROR) {
     reset(); // reset if try again

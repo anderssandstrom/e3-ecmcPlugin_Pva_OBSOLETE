@@ -1,9 +1,16 @@
-if(plc0.firstscan) {
-  pv_reg('IOC_TEST:PLC-0-scantime','pva');
-}
-static.test:=static.test+1;
-var retPvGet:=pv_get('IOC_TEST:PLC-0-scantime');
-#var retPvPut:=pv_put('test2',static.test);
+static.counter:=static.counter+1;
 
-println('retPvGet:', retPvGet);
+# Register pv IOC_TEST:PLC-0-scantime when ecmc ioc has started
+#if(get_ecmc_ioc_started() and not(static.scanHandle)) {
+if(static.scanHandle<=0) {
+  static.scanHandle:=pv_reg('IOC_TEST:PLC-0-scantime','pva');  
+};
+
+# Read value of "IOC_TEST:PLC-0-scantime" when registered
+if(static.scanHandle > 0) {
+  var retPvGet:=pv_get(static.scanHandle);  
+  println('retPvGet:', retPvGet);
+}
+
+#var retPvPut:=pv_put('test2',static.counter);
 #println('retPvPut:', retPvPut);

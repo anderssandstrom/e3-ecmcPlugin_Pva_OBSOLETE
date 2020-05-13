@@ -17,7 +17,7 @@
 #include "pv/pvaClient.h"
 #include <pv/convert.h>
 #include "ecmcPvDefs.h"
-
+#include "ecmcPluginClient.h"
 
 using namespace std;
 using namespace epics::pvData;
@@ -59,5 +59,3 @@ class ecmcPv {
 };
 
 #endif  /* ECMC_PV_H_ */
-//epics::pvaClient::PvaClientGet::getData
-//epics::pvaClient::PvaClientGet::getData

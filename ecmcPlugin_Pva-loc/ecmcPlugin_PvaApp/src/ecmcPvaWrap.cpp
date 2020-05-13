@@ -32,7 +32,7 @@ void* getPvRegObj() {
 
 void reset(double handle) {
   try{
-    pvVector.at(handle)->reset();
+    pvVector.at(handle-1)->reset();
   }    
   catch(std::exception &e){
     std::cerr << "Error: " << e.what() << "\n";
@@ -43,7 +43,7 @@ void reset(double handle) {
 
 double getError(double handle) {
   try{
-    return pvVector.at(handle)->getError();
+    return pvVector.at(handle-1)->getError();
   }    
   catch(std::exception &e){
     std::cerr << "Error: " << e.what() << "\n";
@@ -55,7 +55,7 @@ double getError(double handle) {
 // Normal plc functions
 double getData(double handle) {
   try{
-    return pvVector.at(handle)->get();
+    return pvVector.at(handle-1)->get();
   }    
   catch(std::exception &e){
     std::cerr << "Error: " << e.what() << "\n";
@@ -67,7 +67,7 @@ double getData(double handle) {
 // Normal plc functions
 double putData(double handle, double value) {
   try{
-    pvVector.at((int)handle)->put(value);
+    pvVector.at((int)handle-1)->put(value);
     return 0.0;
   }    
   catch(std::exception &e){

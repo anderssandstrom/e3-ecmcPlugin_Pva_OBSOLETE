@@ -120,6 +120,9 @@ public:
 
   inline T operator()(parameter_list_t parameters)
   {
+    if (getEcmcEpicsIOCState()!=ECMC_IOC_STARTED_STATE) {    
+      return ECMC_PV_IOC_NOT_STARTED;
+    }
 
     string_t pvName(parameters[0]);
     string_t providerName(parameters[1]);
@@ -132,8 +135,8 @@ public:
       std::cerr << "Error: " << e.what() << "\n";
       return T(-1);
     }
-    // return handle to object
-    return pvVector.size()-1;
+    // return handle to object (1 higher than index to avoid 0)
+    return pvVector.size();
   }
 
 private:

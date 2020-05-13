@@ -24,9 +24,18 @@ extern "C" {
 
 #include "ecmcPluginDefs.h"
 #include "ecmcPvaWrap.h"
+#include "ecmcPluginClient.h"
+#include "ecmcPvDefs.h"
+
+// only allow to load once
+#define ECMC_PLUGIN_ALLOW_MULTI_LOAD 0
+
+// Error codes
+#define ECMC_PLUGIN_ERROR_ALREADY_LOADED 1
 
 static int    lastEcmcError = 0;
 static char*  lastConfStr   = NULL;
+static int    loaded = 0;
 
 extern struct ecmcPluginData pluginDataDef;
 
@@ -37,14 +46,19 @@ extern struct ecmcPluginData pluginDataDef;
  **/
 int pvaConstruct(char *configStr)
 {
-  //This module is allowed to load several times so no need to check if loaded
-
+  //This module is only allowed to load once
+  
+  if(loaded && !ECMC_PLUGIN_ALLOW_MULTI_LOAD) {
+    printf("%s/%s:%d: Error: Module already loaded (0x%x).\n",__FILE__, __FUNCTION__,
+           __LINE__,ECMC_PLUGIN_ERROR_ALREADY_LOADED);
+    return ECMC_PLUGIN_ERROR_ALREADY_LOADED;
+  }
   // create Pva object and register data callback
   lastConfStr = strdup(configStr);
 
   // Add refs to generic funcs in runtime since objects
-  printf("CONSTRUCTS!!!!!!!!");
   pluginDataDef.funcs[0].funcGenericObj = getPvRegObj();  
+  loaded = 1;
   return 0;
 }
 
@@ -101,6 +115,14 @@ double pvaGetErr(double handle) {
 double pvaRstErr(double handle) {
   reset(handle);
   return 0.0;
+}
+
+double pvaGetIOCStarted() {
+  return (double)(getEcmcEpicsIOCState()==16);
+}
+
+double pvaGetIOCState() {
+  return (double)getEcmcEpicsIOCState();
 }
 
 // Register data for plugin so ecmc know what to use
@@ -211,7 +233,42 @@ struct ecmcPluginData pluginDataDef = {
         .funcArg10 = NULL,
         .funcGenericObj = NULL,
       },
-  .funcs[5]  = {0}, // last element set all to zero..
+  .funcs[5] =
+      { /*----get_ecmc_ioc_state----*/
+        .funcName = "get_ecmc_ioc_state",
+        .funcDesc = "state = get_ecmc_ioc_state() : Get ecmc epics ioc state.",
+        .funcArg0 = pvaGetIOCState,
+        .funcArg1 = NULL,
+        .funcArg2 = NULL,
+        .funcArg3 = NULL,
+        .funcArg4 = NULL,
+        .funcArg5 = NULL,
+        .funcArg6 = NULL,
+        .funcArg7 = NULL,
+        .funcArg8 = NULL,
+        .funcArg9 = NULL,
+        .funcArg10 = NULL,
+        .funcGenericObj = NULL,
+      },
+  .funcs[6] =
+      { /*----get_ecmc_ioc_started----*/
+        .funcName = "get_ecmc_ioc_started",
+        .funcDesc = "started = get_ecmc_ioc_started() : Get ecmc epics ioc started.",
+        .funcArg0 = pvaGetIOCStarted,
+        .funcArg1 = NULL,
+        .funcArg2 = NULL,
+        .funcArg3 = NULL,
+        .funcArg4 = NULL,
+        .funcArg5 = NULL,
+        .funcArg6 = NULL,
+        .funcArg7 = NULL,
+        .funcArg8 = NULL,
+        .funcArg9 = NULL,
+        .funcArg10 = NULL,
+        .funcGenericObj = NULL,
+      },
+
+  .funcs[7]  = {0}, // last element set all to zero..
   .consts[0] = {0}, // last element set all to zero..
 };
 
