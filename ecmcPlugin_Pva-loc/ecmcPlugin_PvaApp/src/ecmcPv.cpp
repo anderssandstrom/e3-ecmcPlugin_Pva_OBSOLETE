@@ -74,7 +74,7 @@ double ecmcPv::get() {
     reset(); // reset if try again
   }
 
-  try{
+  try{    
     return getData_->getDouble();
   }
   catch(std::exception &e){
